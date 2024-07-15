@@ -32,8 +32,10 @@ import { IoIosSearch } from "react-icons/io";
 import { GoInbox } from "react-icons/go";
 import { IoTodayOutline ,IoCalendarOutline} from "react-icons/io5";
 import { BsMenuButtonWide } from "react-icons/bs";
+import { TiPlus } from "react-icons/ti";
 import {  Outlet } from 'react-router-dom'
 import { NavLink as RouteLink } from 'react-router-dom'
+import DialogComp from '../shared/AlertDialog';
 
 
 interface LinkItemProps {
@@ -54,20 +56,21 @@ interface MobileProps extends FlexProps {
 
 interface SidebarProps extends BoxProps {
     onClose: () => void
+    onOpenTask: () => void
+    onOpenSearch: () => void
 }
 
-
-
-
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Search', icon: IoIosSearch ,path: "/" },
+    // { name: 'Search', icon: IoIosSearch ,path: "/" },
     { name: 'Inbox', icon: GoInbox  ,path:"/inbox"} ,
     { name: 'Today', icon: IoTodayOutline  ,path:"/"},
     { name: 'Upcoming', icon: IoCalendarOutline ,path:"/upcoming" },
     { name: 'Filters & Labels', icon: BsMenuButtonWide ,path:"/filters-labels" },
 ]
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+
+
+const SidebarContent = ({ onClose,onOpenTask , onOpenSearch , ...rest }: SidebarProps) => {
     return (
         <Box
             transition="3s ease"
@@ -84,8 +87,78 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
+
+            {/* <MobileNav /> */}
+
+            <Box
+            style={{ textDecoration: 'none' }}
+            _focus={{  bg: "#ffefe5" }}
+            _activeLink={{  bg: "#ffefe5"}}
+            onClick={onOpenTask}
+            >
+            <Flex
+                align="center"
+                p="2"
+                mx="4"
+                borderRadius="lg"
+                role="group"
+                cursor="pointer"
+                color="#dc4c3e"
+                fontWeight={"600"}
+                _hover={{
+                    bg: '#f2efed',
+                }}
+                >
+                
+                    <TiPlus
+                        style={
+                            {
+                                background:"#dc4c3e",
+                                color :"#fff",
+                                width:"20px",
+                                height:"20px",
+                                borderRadius :"50%",
+                                
+                                marginRight :" .8rem",
+                            }
+                        }
+                        fontSize="16px"
+                    />
+            
+                Add Task
+            </Flex>
+        </Box>
+            <Box
+            style={{ textDecoration: 'none' }}
+            _focus={{  bg: "#ffefe5" }}
+            _activeLink={{color:"#dc4c3e" , bg: "#ffefe5"}}
+            onClick={onOpenSearch}
+            >
+            <Flex
+                align="center"
+                p="2"
+                mx="4"
+                borderRadius="lg"
+                role="group"
+                cursor="pointer"
+                _hover={{
+                    bg: '#f2efed',
+                }}
+                >
+                    <IoIosSearch
+                        style={
+                            {
+                                marginRight :" 1rem",
+                            }
+                        }
+                        fontSize="16"
+                    />
+            
+                Search
+            </Flex>
+        </Box>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} path={link.path}  icon={link.icon}>
+                <NavItem key={link.name} path={link.path} icon={link.icon}>
                     {link.name}
                 </NavItem>
             ))}
@@ -204,10 +277,15 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 
 const SidebarLayout = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen : isOpenTask , onOpen : onOpenTask , onClose : onCloseTask } = useDisclosure()
+    const { isOpen : isOpenSearch , onOpen : onOpenSearch , onClose : onCloseSearch } = useDisclosure()
+
 
     return (
+        <>
         <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-            <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
+            
+            <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} onOpenTask={onOpenTask} onOpenSearch={onOpenSearch} />
             <Drawer
                 isOpen={isOpen}
                 placement="left"
@@ -216,16 +294,29 @@ const SidebarLayout = () => {
                 onOverlayClick={onClose}
                 size="full">
                 <DrawerContent>
-                    <SidebarContent onClose={onClose} />
+                    <SidebarContent onClose={onClose} onOpenTask={onOpenTask} onOpenSearch={onOpenSearch} />
                 </DrawerContent>
             </Drawer>
             {/* mobilenav */}
             <MobileNav onOpen={onOpen} />
             <Box ml={{ base: 0, md: 60 }} p="4">
                 {/* Content */}
+                <button onClick={ onOpenTask}>ggg</button>
                 <Outlet />
+                
             </Box>
         </Box>
+
+
+        {/* هنا اكتبي الكود اللي هيظهر جوا المودل اللي بتظهر لما تضغطي ع Add Task */}
+        <DialogComp isOpen={isOpenTask} onClose={onCloseTask} title={'Bla Bla Bla'}    >
+            <h3>Hello New Task</h3>
+        </DialogComp>
+        {/* هنا اكتبي الكود اللي هيظهر جوا المودل اللي بتظهر لما تضغطي ع Search */}
+        <DialogComp isOpen={isOpenSearch} onClose={onCloseSearch} title={'Bla Bla Bla'}    >
+            <h3>Hello Search</h3>
+        </DialogComp>
+        </>
     )
 }
 
