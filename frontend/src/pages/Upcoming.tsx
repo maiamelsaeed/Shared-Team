@@ -1,11 +1,5 @@
-import React from 'react'
-
 const Upcoming = () => {
-  return (
-    <div>
-      Upcoming
-    </div>
-  )
-}
+  return <div>Upcoming</div>;
+};
 
-export default Upcoming
+export default Upcoming;
